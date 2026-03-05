@@ -1,0 +1,15 @@
+spring:
+  profiles:
+    active: dev
+
+  application:
+    name: Expense Income Tracker
+
+  jpa:
+    open-in-view: false
+
+security:
+  jwt:
+    secret: Q2hhdEdQVC1TdXBlci1TZWN1cmUtSldULVNlY3JldC1LZXktMjAyNg==
+    expiration: 86400000
+
