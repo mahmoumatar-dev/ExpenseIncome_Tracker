@@ -55,7 +55,11 @@ public class BudgetServiceImpl implements BudgetService {
 
     private BudgetResponse mapToResponse(Budget budget) {
         return new BudgetResponse(
-                budget.getId(),budget.getCategory().getId(),budget.getCategory().getName(),budget.getMonthlyLimit(),budget.getCreatedAt()
+                budget.getId(),
+                budget.getCategory().getId(),
+                budget.getCategory().getName(),
+                budget.getMonthlyLimit(),
+                budget.getCreatedAt()
         );
     }
 }

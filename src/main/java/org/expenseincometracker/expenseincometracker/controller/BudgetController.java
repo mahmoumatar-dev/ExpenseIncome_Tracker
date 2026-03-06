@@ -34,7 +34,6 @@ public class BudgetController {
             
         User parent = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
         return ResponseEntity.ok(
                 ApiResponse.success(
                         budgetService.createBudget(request, parent
@@ -44,7 +43,6 @@ public class BudgetController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('PARENT')")
     public ResponseEntity<?> getBudgets(Authentication authentication) {
         User parent = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
