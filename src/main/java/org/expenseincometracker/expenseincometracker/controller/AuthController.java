@@ -1,4 +1,5 @@
 package org.expenseincometracker.expenseincometracker.controller;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import org.expenseincometracker.expenseincometracker.service.RefreshTokenService
 import org.expenseincometracker.expenseincometracker.service.TokenBlacklistService;
 import org.expenseincometracker.expenseincometracker.util.model.ApiResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,6 +60,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<String> logout(HttpServletRequest request) {
 
         String authHeader = request.getHeader("Authorization");
