@@ -2,16 +2,23 @@ package org.expenseincometracker.expenseincometracker.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.expenseincometracker.expenseincometracker.dto.request.CreateChildRequest;
+import org.expenseincometracker.expenseincometracker.dto.response.ChildResponse;
 import org.expenseincometracker.expenseincometracker.entity.User;
 import org.expenseincometracker.expenseincometracker.enums.Role;
 import org.expenseincometracker.expenseincometracker.enums.UserStatus;
 import org.expenseincometracker.expenseincometracker.exception.BusinessException;
 import org.expenseincometracker.expenseincometracker.exception.NotFoundException;
+import org.expenseincometracker.expenseincometracker.repository.TransactionRepository;
 import org.expenseincometracker.expenseincometracker.repository.UserRepository;
 import org.expenseincometracker.expenseincometracker.service.ParentChildrenManagementService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +26,7 @@ public class ParentChildrenManagementImpl implements ParentChildrenManagementSer
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TransactionRepository transactionRepository;
 
     @Override
     public void createChild(CreateChildRequest request, Authentication authentication) {
@@ -42,7 +50,50 @@ public class ParentChildrenManagementImpl implements ParentChildrenManagementSer
         child.setRole(Role.ROLE_CHILD);
         child.setParent(parent);
         child.setStatus(UserStatus.ACTIVE);
+        child.setSpendingLimit(request.spendingLimit());
 
+        userRepository.save(child);
+    }
+
+    @Override
+    public List<ChildResponse> getChildren(Authentication authentication) {
+        String parentEmail = authentication.getName();
+        User parent = userRepository.findByEmail(parentEmail)
+                .orElseThrow(() -> new NotFoundException("Parent not found"));
+
+        List<User> children = userRepository.findByParentId(parent.getId());
+
+        return children.stream().map(child -> {
+            BigDecimal spent = transactionRepository.sumChildExpensesThisMonth(child.getId());
+            return new ChildResponse(
+                    child.getId(),
+                    child.getName(),
+                    child.getEmail(),
+                    child.getStatus(),
+                    child.getSpendingLimit(),
+                    spent
+            );
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public void updateChildStatus(Long childId, Authentication authentication) {
+        String parentEmail = authentication.getName();
+        User parent = userRepository.findByEmail(parentEmail)
+                .orElseThrow(() -> new NotFoundException("Parent not found"));
+
+        User child = userRepository.findById(childId)
+                .orElseThrow(() -> new NotFoundException("Child not found"));
+
+        if (!child.getParent().getId().equals(parent.getId())) {
+            throw new BusinessException("You can only update your own children");
+        }
+
+        child.setStatus(
+                child.getStatus()==UserStatus.ACTIVE?
+                        UserStatus.SUSPENDED:
+                        UserStatus.ACTIVE);
         userRepository.save(child);
     }
 }

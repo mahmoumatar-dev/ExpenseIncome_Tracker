@@ -28,4 +28,13 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long>,
         AND DATE_TRUNC('month', t.createdAt) = DATE_TRUNC('month', CURRENT_DATE)
         """)
     BigDecimal sumCategoryExpensesThisMonth(Long categoryId, Long parentId);
+
+    @Query("""
+        SELECT COALESCE(SUM(t.amount),0)
+        FROM Transaction t
+        WHERE t.createdBy.id = :childId
+        AND t.type = 'EXPENSE'
+        AND DATE_TRUNC('month', t.createdAt) = DATE_TRUNC('month', CURRENT_DATE)
+        """)
+    BigDecimal sumChildExpensesThisMonth(Long childId);
 }

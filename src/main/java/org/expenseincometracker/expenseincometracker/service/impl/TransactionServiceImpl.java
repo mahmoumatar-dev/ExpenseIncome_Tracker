@@ -5,6 +5,8 @@ import org.expenseincometracker.expenseincometracker.dto.request.CreateTransacti
 import org.expenseincometracker.expenseincometracker.dto.response.TransactionResponse;
 import org.expenseincometracker.expenseincometracker.entity.*;
 import org.expenseincometracker.expenseincometracker.enums.TransactionType;
+import org.expenseincometracker.expenseincometracker.enums.UserStatus;
+import org.expenseincometracker.expenseincometracker.exception.BusinessException;
 import org.expenseincometracker.expenseincometracker.exception.ResourceNotFoundException;
 import org.expenseincometracker.expenseincometracker.helper.BudgetHelper;
 import org.expenseincometracker.expenseincometracker.helper.CategoryHelper;
@@ -35,6 +37,9 @@ public class TransactionServiceImpl implements TransactionService {
     @Transactional
     public TransactionResponse createTransaction(CreateTransactionRequest request, User user) {
 
+        if(user.getStatus()== UserStatus.SUSPENDED)
+            throw new BusinessException("Your account is suspended you can't create any transaction");
+
         transactionHelper.validateTransactionTypeForUser(request.type(), user);
 
         Wallet wallet = walletRepository.findById(request.walletId())
@@ -43,6 +48,9 @@ public class TransactionServiceImpl implements TransactionService {
 
         Category category = null;
         if (request.type() == TransactionType.EXPENSE) {
+
+            transactionHelper.validateChildSpendingLimit(user, request.amount());
+
             if (request.categoryId() == null) {
                 throw new IllegalArgumentException("Category is required for expense transaction");
             }
