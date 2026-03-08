@@ -1,9 +1,12 @@
 package org.expenseincometracker.expenseincometracker.repository;
 
+import org.expenseincometracker.expenseincometracker.dto.response.ParentTransactionResponse;
 import org.expenseincometracker.expenseincometracker.entity.Transaction;
 import org.expenseincometracker.expenseincometracker.dto.response.CategorySpendingResponse;
 import org.expenseincometracker.expenseincometracker.dto.response.ChildSpendingResponse;
 import org.expenseincometracker.expenseincometracker.dto.response.IncomeExpenseResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -127,4 +130,22 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     List<ChildSpendingResponse> sumChildrenExpensesThisMonth(@Param("parentId") Long parentId);
 
 
+    @Query("""
+       SELECT new org.expenseincometracker.expenseincometracker.dto.response.ParentTransactionResponse(
+           t.createdAt,
+           c.name,
+           w.name,
+           t.type,
+           t.amount
+       )
+       FROM Transaction t
+       JOIN t.wallet w
+       LEFT JOIN t.category c
+       WHERE w.owner.id = :parentId
+       ORDER BY t.createdAt DESC
+       """)
+    Page<ParentTransactionResponse> findParentTransactions(
+            @Param("parentId") Long parentId,
+            Pageable pageable
+    );
 }

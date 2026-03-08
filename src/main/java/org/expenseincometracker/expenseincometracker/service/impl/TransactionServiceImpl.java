@@ -2,20 +2,21 @@ package org.expenseincometracker.expenseincometracker.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.expenseincometracker.expenseincometracker.dto.request.CreateTransactionRequest;
+import org.expenseincometracker.expenseincometracker.dto.response.ParentTransactionResponse;
 import org.expenseincometracker.expenseincometracker.dto.response.TransactionResponse;
 import org.expenseincometracker.expenseincometracker.entity.*;
 import org.expenseincometracker.expenseincometracker.enums.TransactionType;
 import org.expenseincometracker.expenseincometracker.enums.UserStatus;
 import org.expenseincometracker.expenseincometracker.exception.BusinessException;
 import org.expenseincometracker.expenseincometracker.exception.ResourceNotFoundException;
-import org.expenseincometracker.expenseincometracker.helper.BudgetHelper;
-import org.expenseincometracker.expenseincometracker.helper.CategoryHelper;
-import org.expenseincometracker.expenseincometracker.helper.TransactionHelper;
-import org.expenseincometracker.expenseincometracker.helper.WalletHelper;
+import org.expenseincometracker.expenseincometracker.helper.*;
 import org.expenseincometracker.expenseincometracker.repository.CategoryRepository;
 import org.expenseincometracker.expenseincometracker.repository.TransactionRepository;
 import org.expenseincometracker.expenseincometracker.repository.WalletRepository;
 import org.expenseincometracker.expenseincometracker.service.TransactionService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final BudgetHelper budgetHelper;
     private final CategoryHelper categoryHelper;
     private final TransactionHelper transactionHelper;
+    private final UserHelper userHelper;
 
 
     @Override
@@ -75,6 +77,15 @@ public class TransactionServiceImpl implements TransactionService {
         Transaction saved = transactionRepository.save(transaction);
 
         return mapToResponse(saved);
+    }
+
+    @Override
+    public Page<ParentTransactionResponse> getParentTransactions(
+            Authentication authentication,
+            Pageable pageable
+    ) {
+        Long parentId = userHelper.getAuthenticatedParentId(authentication);
+        return transactionRepository.findParentTransactions(parentId, pageable);
     }
 
     private TransactionResponse mapToResponse(Transaction transaction) {
