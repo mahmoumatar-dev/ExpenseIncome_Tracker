@@ -12,7 +12,6 @@ import org.expenseincometracker.expenseincometracker.service.RefreshTokenService
 import org.expenseincometracker.expenseincometracker.service.TokenBlacklistService;
 import org.expenseincometracker.expenseincometracker.util.model.ApiResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,9 +65,6 @@ public class AuthController {
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
-            System.out.println("=====================");
-            System.out.println(token);
-            System.out.println("==================");
             tokenBlacklistService.revokeToken(token);
         }
 

@@ -33,7 +33,7 @@ public class ParentChildrenManagementImpl implements ParentChildrenManagementSer
     @Override
     public void createChild(CreateChildRequest request, Authentication authentication) {
 
-        User parent = userHelper.getAuthenticatedParent(authentication);
+        User parent = userHelper.getAuthenticatedUser(authentication);
 
         if (parent.getRole() != Role.ROLE_PARENT) {
             throw new BusinessException("This user can't add children");
@@ -57,7 +57,7 @@ public class ParentChildrenManagementImpl implements ParentChildrenManagementSer
 
     @Override
     public List<ChildResponse> getChildren(Authentication authentication) {
-        User parent =userHelper.getAuthenticatedParent(authentication);
+        User parent =userHelper.getAuthenticatedUser(authentication);
 
         List<User> children = userRepository.findByParentId(parent.getId());
 
@@ -77,7 +77,7 @@ public class ParentChildrenManagementImpl implements ParentChildrenManagementSer
     @Override
     @Transactional
     public void updateChildStatus(Long childId, Authentication authentication) {
-        User parent =userHelper.getAuthenticatedParent(authentication);
+        User parent =userHelper.getAuthenticatedUser(authentication);
 
         User child = userRepository.findById(childId)
                 .orElseThrow(() -> new NotFoundException("Child not found"));

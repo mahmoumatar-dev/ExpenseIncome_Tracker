@@ -13,6 +13,7 @@ import org.expenseincometracker.expenseincometracker.helper.UserHelper;
 import org.expenseincometracker.expenseincometracker.helper.WalletHelper;
 import org.expenseincometracker.expenseincometracker.repository.UserRepository;
 import org.expenseincometracker.expenseincometracker.repository.WalletRepository;
+import org.expenseincometracker.expenseincometracker.repository.TransactionRepository;
 import org.expenseincometracker.expenseincometracker.service.ParentWalletService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ import java.util.List;
 public class ParentWalletServiceImpl implements ParentWalletService {
 
     private final WalletRepository walletRepository;
+    private final TransactionRepository transactionRepository;
     private final UserHelper userHelper;
     private final WalletHelper walletHelper;
 
@@ -33,7 +35,7 @@ public class ParentWalletServiceImpl implements ParentWalletService {
     @Transactional
     public WalletResponse createWallet(CreateWalletRequest request, Authentication authentication) {
 
-        User parent = userHelper.getAuthenticatedParent(authentication);
+        User parent = userHelper.getAuthenticatedUser(authentication);
 
         List<User> children = walletHelper.resolveAndValidateChildren(request.childrenIds(), parent);
 
@@ -53,7 +55,7 @@ public class ParentWalletServiceImpl implements ParentWalletService {
     @Transactional
     public WalletResponse updateWallet(Long walletId, UpdateWalletRequest request, Authentication authentication) {
 
-        User parent = userHelper.getAuthenticatedParent(authentication);
+        User parent = userHelper.getAuthenticatedUser(authentication);
 
         Wallet wallet = walletRepository.findByIdAndOwnerId(walletId, parent.getId())
                 .orElseThrow(() -> new NotFoundException("Wallet not found or does not belong to you"));
@@ -86,7 +88,7 @@ public class ParentWalletServiceImpl implements ParentWalletService {
     @Transactional(readOnly = true)
     public List<WalletResponse> getParentWallets(Authentication authentication) {
 
-        User parent = userHelper.getAuthenticatedParent(authentication);
+        User parent = userHelper.getAuthenticatedUser(authentication);
 
         List<Wallet> wallets = walletRepository.findAllByOwnerId(parent.getId());
 
@@ -99,10 +101,14 @@ public class ParentWalletServiceImpl implements ParentWalletService {
     @Transactional
     public void deleteWallet(Long walletId, Authentication authentication) {
 
-        User parent = userHelper.getAuthenticatedParent(authentication);
+        User parent = userHelper.getAuthenticatedUser(authentication);
 
         Wallet wallet = walletRepository.findByIdAndOwnerId(walletId, parent.getId())
                 .orElseThrow(() -> new NotFoundException("Wallet not found or does not belong to you"));
+
+        if (transactionRepository.existsByWalletId(walletId)) {
+            throw new BusinessException("Cannot delete a wallet that has financial transaction history.");
+        }
 
         walletRepository.delete(wallet);
     }

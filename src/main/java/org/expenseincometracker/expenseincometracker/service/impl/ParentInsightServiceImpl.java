@@ -25,7 +25,7 @@ public class ParentInsightServiceImpl implements ParentInsightService {
 
     @Override
     public ParentDashboardOverviewResponse getOverview(Authentication authentication) {
-        Long parentId = userHelper.getAuthenticatedParentId(authentication);
+        Long parentId = userHelper.getAuthenticatedUserId(authentication);
 
         BigDecimal averageMonthlySpending = transactionRepository.averageMonthlySpending(parentId);
         if (averageMonthlySpending == null) {
@@ -49,14 +49,14 @@ public class ParentInsightServiceImpl implements ParentInsightService {
 
     @Override
     public List<CategorySpendingResponse> getSpendingByCategory(Authentication authentication) {
-        Long parentId = userHelper.getAuthenticatedParentId(authentication);
+        Long parentId = userHelper.getAuthenticatedUserId(authentication);
         return transactionRepository.spendingByCategory(parentId);
     }
 
 
     @Override
     public List<IncomeExpenseResponse> getIncomeVsExpense (Authentication authentication){
-        Long parentId = userHelper.getAuthenticatedParentId(authentication);
+        Long parentId = userHelper.getAuthenticatedUserId(authentication);
         LocalDateTime sixMonthsAgo = LocalDateTime.now().minusMonths(6).withDayOfMonth(1)
                 .withHour(0).withMinute(0).withSecond(0).withNano(0);
 
@@ -66,7 +66,7 @@ public class ParentInsightServiceImpl implements ParentInsightService {
 
     @Override
     public List<ChildSpendingResponse> getChildrenAnalysis (Authentication authentication){
-        Long parentId = userHelper.getAuthenticatedParentId(authentication);
+        Long parentId = userHelper.getAuthenticatedUserId(authentication);
         return  transactionRepository.sumChildrenExpensesThisMonth(parentId);
     }
 

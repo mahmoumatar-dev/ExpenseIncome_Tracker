@@ -10,7 +10,7 @@ import org.springframework.security.core.Authentication;
 
 public interface TransactionService {
     TransactionResponse createTransaction(CreateTransactionRequest request, User user);
-    Page<ParentTransactionResponse> getUserTransactions(
+    Page<ParentTransactionResponse> getParentTransactions(
             Authentication authentication,
             Pageable pageable
     );

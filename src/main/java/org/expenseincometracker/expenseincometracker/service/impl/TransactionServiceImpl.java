@@ -64,6 +64,7 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         walletHelper.updateWalletBalance(wallet, request);
+        walletRepository.save(wallet);
 
         Transaction transaction = Transaction.builder()
                 .amount(request.amount())
@@ -80,11 +81,11 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Page<ParentTransactionResponse> getUserTransactions(
+    public Page<ParentTransactionResponse> getParentTransactions(
             Authentication authentication,
             Pageable pageable
     ) {
-        Long parentId = userHelper.getAuthenticatedParentId(authentication);
+        Long parentId = userHelper.getAuthenticatedUserId(authentication);
         return transactionRepository.findByUserId(parentId, pageable);
     }
 
@@ -93,8 +94,8 @@ public class TransactionServiceImpl implements TransactionService {
             Authentication authentication,
             Pageable pageable
     ) {
-        Long parentId = userHelper.getAuthenticatedParentId(authentication);
-        return transactionRepository.findByChildId(parentId, pageable);
+        Long parentId = userHelper.getAuthenticatedUserId(authentication);
+        return transactionRepository.findByChildrenId(parentId, pageable);
     }
 
     private TransactionResponse mapToResponse(Transaction transaction) {

@@ -6,9 +6,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.expenseincometracker.expenseincometracker.dto.request.CreateBudgetRequest;
 import org.expenseincometracker.expenseincometracker.entity.User;
-import org.expenseincometracker.expenseincometracker.repository.UserRepository;
+import org.expenseincometracker.expenseincometracker.helper.UserHelper;
 import org.expenseincometracker.expenseincometracker.service.BudgetService;
-import org.expenseincometracker.expenseincometracker.exception.ResourceNotFoundException;
 import org.expenseincometracker.expenseincometracker.util.model.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,15 +24,13 @@ import org.springframework.web.bind.annotation.*;
 public class BudgetController {
 
     private final BudgetService budgetService;
-    private final UserRepository userRepository;
+    private final UserHelper userHelper;
 
     @PostMapping
     public ResponseEntity<?> createBudget(
             @Valid @RequestBody CreateBudgetRequest request,
             Authentication authentication) {
-            
-        User parent = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        User parent = userHelper.getAuthenticatedUser(authentication);
         return ResponseEntity.ok(
                 ApiResponse.success(
                         budgetService.createBudget(request, parent
@@ -44,9 +41,7 @@ public class BudgetController {
 
     @GetMapping
     public ResponseEntity<?> getBudgets(Authentication authentication) {
-        User parent = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
+        User parent = userHelper.getAuthenticatedUser(authentication);
         return ResponseEntity.ok(
                 ApiResponse.success(
                         budgetService.getBudgets(parent)

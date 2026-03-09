@@ -13,14 +13,14 @@ public class UserHelper {
 
     private final UserRepository userRepository;
 
-    public Long getAuthenticatedParentId (Authentication authentication){
+    public Long getAuthenticatedUserId (Authentication authentication){
         String email = authentication.getName();
-        User parent = userRepository.findByEmail(email)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Authenticated user not found"));
-        return parent.getId();
+        return user.getId();
     }
 
-    public User getAuthenticatedParent(Authentication authentication){
+    public User getAuthenticatedUser(Authentication authentication){
         String email = authentication.getName();
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Authenticated user not found"));

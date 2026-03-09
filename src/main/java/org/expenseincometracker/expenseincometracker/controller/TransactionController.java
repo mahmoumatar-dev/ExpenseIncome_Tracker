@@ -24,13 +24,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/transactions")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearerAuth")
-@PreAuthorize("hasAnyRole('PARENT', 'CHILD')")
 @Tag(name = "Transaction Management", description = "APIs for managing expense or income transactions for by the authenticated parent or its children")
 public class TransactionController {
 
     private final TransactionService transactionService;
     private final UserRepository userRepository;
 
+    @PreAuthorize("hasAnyRole('PARENT', 'CHILD')")
     @PostMapping
     public ResponseEntity<?> createTransaction(
             @Valid @RequestBody CreateTransactionRequest request,
@@ -46,8 +46,9 @@ public class TransactionController {
         );
     }
 
-    @GetMapping
-    public ResponseEntity<?> getTransactions(
+    @PreAuthorize("hasAnyRole('PARENT')")
+    @GetMapping("/parent")
+    public ResponseEntity<?> getParentTransactions(
             Authentication authentication,
             @RequestParam(defaultValue = "0") int page
     ) {
@@ -57,10 +58,11 @@ public class TransactionController {
                 Sort.by(Sort.Direction.DESC, "createdAt")
         );
         Page<ParentTransactionResponse> transactions =
-                transactionService.getUserTransactions(authentication, pageable);
+                transactionService.getParentTransactions(authentication, pageable);
         return ResponseEntity.ok(transactions);
     }
 
+    @PreAuthorize("hasAnyRole('CHILD')")
     @GetMapping("/child")
     public ResponseEntity<?> getChildTransactions(
             Authentication authentication,

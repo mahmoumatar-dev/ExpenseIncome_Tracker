@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.expenseincometracker.expenseincometracker.dto.response.CategorySpendingResponse;
 import org.expenseincometracker.expenseincometracker.dto.response.ChildDashboardOverviewResponse;
-import org.expenseincometracker.expenseincometracker.dto.response.ParentDashboardOverviewResponse;
 import org.expenseincometracker.expenseincometracker.service.ChildrenInsightService;
 import org.expenseincometracker.expenseincometracker.util.model.ApiResponse;
 import org.springframework.http.ResponseEntity;

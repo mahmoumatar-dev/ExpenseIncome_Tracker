@@ -39,12 +39,9 @@ public class WalletHelper {
 
     public void updateWalletBalance(Wallet wallet, CreateTransactionRequest request) {
         if (request.type() == TransactionType.INCOME) {
-            wallet.setBalance(wallet.getBalance().add(request.amount()));
+            wallet.addBalance(request.amount());
         } else {
-            if (wallet.getBalance().compareTo(request.amount()) < 0) {
-                throw new IllegalStateException("Insufficient wallet balance");
-            }
-            wallet.setBalance(wallet.getBalance().subtract(request.amount()));
+            wallet.deductBalance(request.amount());
         }
     }
 

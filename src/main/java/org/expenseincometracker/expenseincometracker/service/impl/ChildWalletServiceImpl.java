@@ -22,9 +22,9 @@ public class ChildWalletServiceImpl implements ChildWalletService {
     private final UserHelper userHelper;
 
     @Override
-    public ChildWalletResponse getChildWallet(Authentication authentication) {
+    public List<ChildWalletResponse> getChildWallets(Authentication authentication) {
 
-        User child = userHelper.getAuthenticatedParent(authentication);
+        User child = userHelper.getAuthenticatedUser(authentication);
 
         List<Wallet> wallets = walletRepository.findByAssignedChildren_Id(child.getId());
 
@@ -32,12 +32,11 @@ public class ChildWalletServiceImpl implements ChildWalletService {
             throw new ResourceNotFoundException("No wallet assigned to this child");
         }
 
-        Wallet wallet = wallets.get(0);
-        return new ChildWalletResponse(
+        return wallets.stream().map(wallet -> new ChildWalletResponse(
                 wallet.getId(),
                 wallet.getName(),
                 wallet.getBalance(),
                 wallet.getCurrency()
-        );
+        )).toList();
     }
 }

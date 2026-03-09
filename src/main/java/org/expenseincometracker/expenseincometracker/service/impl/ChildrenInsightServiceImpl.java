@@ -27,7 +27,7 @@ public class ChildrenInsightServiceImpl implements ChildrenInsightService {
 
     @Override
     public ChildDashboardOverviewResponse getDashboard(Authentication authentication) {
-        User child = userHelper.getAuthenticatedParent(authentication);
+        User child = userHelper.getAuthenticatedUser(authentication);
         List<Wallet> wallets = walletRepository.findByAssignedChildren_Id(child.getId());
 
         if (wallets.isEmpty()) {
@@ -51,7 +51,7 @@ public class ChildrenInsightServiceImpl implements ChildrenInsightService {
 
     @Override
     public List<CategorySpendingResponse> getCategorySpending(Authentication authentication) {
-        Long childId = userHelper.getAuthenticatedParentId(authentication);
+        Long childId = userHelper.getAuthenticatedUserId(authentication);
         return transactionRepository.getChildSpendingByCategory(childId);
     }
 

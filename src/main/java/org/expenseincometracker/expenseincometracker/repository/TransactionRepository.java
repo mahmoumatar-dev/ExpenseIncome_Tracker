@@ -2,6 +2,7 @@ package org.expenseincometracker.expenseincometracker.repository;
 
 import org.expenseincometracker.expenseincometracker.dto.response.*;
 import org.expenseincometracker.expenseincometracker.entity.Transaction;
+import org.expenseincometracker.expenseincometracker.enums.Role;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,7 +21,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
        SELECT COALESCE(SUM(t.amount),0)
        FROM Transaction t
        WHERE t.category.id = :categoryId
-       AND t.createdBy.id = :parentId
+       AND (t.createdBy.id = :parentId OR t.createdBy.parent.id = :parentId)
        """)
     BigDecimal sumSpentByCategory(Long categoryId, Long parentId);
 
@@ -29,7 +30,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
         FROM Transaction t
         WHERE t.category.id = :categoryId
         AND t.type = 'EXPENSE'
-        AND t.createdBy.id = :parentId
+        AND (t.createdBy.id = :parentId OR t.createdBy.parent.id = :parentId)
         AND DATE_TRUNC('month', t.createdAt) = DATE_TRUNC('month', CURRENT_DATE)
         """)
     BigDecimal sumCategoryExpensesThisMonth(Long categoryId, Long parentId);
@@ -170,7 +171,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
        WHERE t.createdBy.id = :childId
        ORDER BY t.createdAt DESC
        """)
-    Page<ParentTransactionResponse> findByChildId(
+    Page<ParentTransactionResponse> findByChildrenId(
             @Param("childId") Long childId,
             Pageable pageable
     );
@@ -184,4 +185,44 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
        """)
     BigDecimal getTotalAmountByCreatedBy_Id(Long createdById);
 
+    @Query("""
+        SELECT new org.expenseincometracker.expenseincometracker.dto.response.AdminTransactionResponse(
+            t.id,
+            u.name,
+            t.type,
+            t.amount,
+            c.name,
+            t.createdAt,
+            u.status
+        )
+        FROM Transaction t
+        JOIN t.createdBy u
+        LEFT JOIN t.category c
+        WHERE u.role IN (:roles)
+        """)
+    Page<AdminTransactionResponse> findAllParentAndChildTransactions(
+            @Param("roles") List<Role> roles,
+            Pageable pageable
+    );
+
+    @Query("SELECT COALESCE(SUM(t.amount),0) FROM Transaction t")
+    BigDecimal getTotalTransactionAmount();
+
+    boolean existsByWalletId(Long walletId);
+
+    boolean existsByCategoryId(Long categoryId);
+
+    long countByCreatedBy_Id(Long userId);
+
+    @Query("""
+        SELECT new org.expenseincometracker.expenseincometracker.dto.response.MonthlyTransactionVolumeResponse(
+            YEAR(t.createdAt),
+            MONTH(t.createdAt),
+            AVG(t.amount)
+        )
+        FROM Transaction t
+        GROUP BY YEAR(t.createdAt), MONTH(t.createdAt)
+        ORDER BY YEAR(t.createdAt), MONTH(t.createdAt)
+    """)
+    List<MonthlyTransactionVolumeResponse> getMonthlyTransactionVolume();
 }

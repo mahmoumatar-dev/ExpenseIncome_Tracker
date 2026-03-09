@@ -23,7 +23,7 @@ public class ParentProfileServiceImpl implements ParentProfileService {
     @Transactional
     public void updateProfile(Authentication authentication, UpdateProfileRequest request) {
 
-        User user =userHelper.getAuthenticatedParent(authentication);
+        User user =userHelper.getAuthenticatedUser(authentication);
 
         if (request.name() != null && !request.name().isBlank()) {
             user.setName(request.name());

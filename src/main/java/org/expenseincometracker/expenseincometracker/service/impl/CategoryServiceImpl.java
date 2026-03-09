@@ -132,6 +132,10 @@ public class CategoryServiceImpl implements CategoryService {
             throw new AccessDeniedException("You can only delete your own categories");
         }
 
+        if (transactionRepository.existsByCategoryId(categoryId)) {
+            throw new org.expenseincometracker.expenseincometracker.exception.BusinessException("Cannot delete a category that has financial transaction history.");
+        }
+
         budgetRepository.findByCategoryIdAndParentId(categoryId, parent.getId())
                 .ifPresent(budgetRepository::delete);
         categoryRepository.delete(category);
