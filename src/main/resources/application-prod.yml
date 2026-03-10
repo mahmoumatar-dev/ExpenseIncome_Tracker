@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/ExpenseTrackerDB
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://centerbeam.proxy.rlwy.net:22102/railway?sslmode=require
     username: postgres
-    password: matar
+    password: LjqSHFQRkoBTIfUKlYXnUFsuHiPiyWyU
+    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
@@ -16,4 +16,3 @@ springdoc:
     enabled: false
   swagger-ui:
     enabled: false
-
