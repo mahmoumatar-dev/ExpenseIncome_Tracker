@@ -59,7 +59,9 @@ public class TransactionController {
         );
         Page<ParentTransactionResponse> transactions =
                 transactionService.getParentTransactions(authentication, pageable);
-        return ResponseEntity.ok(transactions);
+        return ResponseEntity.ok(ApiResponse.success(
+                transactions
+        ));
     }
 
     @PreAuthorize("hasAnyRole('CHILD')")
@@ -75,7 +77,9 @@ public class TransactionController {
         );
         Page<ParentTransactionResponse> transactions =
                 transactionService.getChildUserTransactions(authentication, pageable);
-        return ResponseEntity.ok(transactions);
+        return ResponseEntity.ok(ApiResponse.success(
+                transactions
+        ));
     }
 
 

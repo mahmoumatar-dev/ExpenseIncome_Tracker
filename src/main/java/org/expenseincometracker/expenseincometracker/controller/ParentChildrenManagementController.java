@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.expenseincometracker.expenseincometracker.dto.request.CreateChildRequest;
 import org.expenseincometracker.expenseincometracker.service.ParentChildrenManagementService;
+import org.expenseincometracker.expenseincometracker.util.model.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -33,7 +34,11 @@ public class ParentChildrenManagementController {
 
     @GetMapping
     public ResponseEntity<?> getChildren(Authentication authentication) {
-        return ResponseEntity.ok(parentService.getChildren(authentication));
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                parentService.getChildren(authentication)
+        )
+        );
     }
 
     @PutMapping("/{childId}/status")
