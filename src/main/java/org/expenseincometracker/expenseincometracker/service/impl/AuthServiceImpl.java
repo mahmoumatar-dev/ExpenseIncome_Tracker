@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.expenseincometracker.expenseincometracker.dto.request.LoginRequest;
 import org.expenseincometracker.expenseincometracker.dto.request.RegisterRequest;
 import org.expenseincometracker.expenseincometracker.dto.response.AuthResponse;
+import org.expenseincometracker.expenseincometracker.dto.response.AuthenticatedUserResponse;
 import org.expenseincometracker.expenseincometracker.entity.RefreshToken;
 import org.expenseincometracker.expenseincometracker.entity.User;
 import org.expenseincometracker.expenseincometracker.enums.Role;
@@ -87,5 +88,16 @@ public class AuthServiceImpl implements AuthService {
         user.setRole(role);
         user.setStatus(UserStatus.ACTIVE);
         userRepository.save(user);
+    }
+
+    @Override
+    public AuthenticatedUserResponse getCurrentUser(User user) {
+        return new AuthenticatedUserResponse(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getRole(),
+                user.getStatus()
+        );
     }
 }

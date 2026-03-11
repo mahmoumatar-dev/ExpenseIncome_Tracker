@@ -7,15 +7,15 @@ import org.expenseincometracker.expenseincometracker.dto.request.LoginRequest;
 import org.expenseincometracker.expenseincometracker.dto.request.RefreshTokenRequest;
 import org.expenseincometracker.expenseincometracker.dto.request.RegisterRequest;
 import org.expenseincometracker.expenseincometracker.dto.response.AuthResponse;
+import org.expenseincometracker.expenseincometracker.entity.User;
+import org.expenseincometracker.expenseincometracker.helper.UserHelper;
 import org.expenseincometracker.expenseincometracker.service.AuthService;
 import org.expenseincometracker.expenseincometracker.service.RefreshTokenService;
 import org.expenseincometracker.expenseincometracker.service.TokenBlacklistService;
 import org.expenseincometracker.expenseincometracker.util.model.ApiResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final UserHelper userHelper;
     private final RefreshTokenService refreshTokenService;
     private final TokenBlacklistService tokenBlacklistService;
 
@@ -69,6 +70,18 @@ public class AuthController {
         }
 
         return ResponseEntity.ok("Logged out successfully");
+    }
+
+    @GetMapping("/me")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<?> getCurrentUser(
+            Authentication authentication
+    ) {
+       User user = userHelper.getAuthenticatedUser(authentication);
+        return ResponseEntity.ok(
+                ApiResponse.success(authService.getCurrentUser(user)
+                )
+        );
     }
 
 }
