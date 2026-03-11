@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 
 public record CreateChildRequest(
-        @NotBlank String fullName,
+        @NotBlank String name,
 
         @Email
         @NotBlank String email,

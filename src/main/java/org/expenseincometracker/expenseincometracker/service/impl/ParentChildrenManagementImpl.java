@@ -44,7 +44,7 @@ public class ParentChildrenManagementImpl implements ParentChildrenManagementSer
         }
 
         User child = new User();
-        child.setName(request.fullName());
+        child.setName(request.name());
         child.setEmail(request.email());
         child.setPassword(passwordEncoder.encode(request.password()));
         child.setRole(Role.ROLE_CHILD);
