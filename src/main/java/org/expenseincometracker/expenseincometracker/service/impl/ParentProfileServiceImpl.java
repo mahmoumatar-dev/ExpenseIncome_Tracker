@@ -2,6 +2,7 @@ package org.expenseincometracker.expenseincometracker.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.expenseincometracker.expenseincometracker.dto.request.UpdateProfileRequest;
+import org.expenseincometracker.expenseincometracker.dto.response.AuthenticatedUserResponse;
 import org.expenseincometracker.expenseincometracker.entity.User;
 import org.expenseincometracker.expenseincometracker.helper.UserHelper;
 import org.expenseincometracker.expenseincometracker.repository.UserRepository;
@@ -21,7 +22,7 @@ public class ParentProfileServiceImpl implements ParentProfileService {
 
     @Override
     @Transactional
-    public void updateProfile(Authentication authentication, UpdateProfileRequest request) {
+    public AuthenticatedUserResponse updateProfile(Authentication authentication, UpdateProfileRequest request) {
 
         User user =userHelper.getAuthenticatedUser(authentication);
 
@@ -43,6 +44,13 @@ public class ParentProfileServiceImpl implements ParentProfileService {
             }
             user.setPassword(passwordEncoder.encode(request.newPassword()));
         }
-        userRepository.save(user);
+        user = userRepository.save(user);
+        return new AuthenticatedUserResponse(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getRole(),
+                user.getStatus()
+        );
     }
 }

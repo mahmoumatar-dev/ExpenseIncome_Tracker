@@ -5,7 +5,9 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.expenseincometracker.expenseincometracker.dto.request.UpdateProfileRequest;
+import org.expenseincometracker.expenseincometracker.dto.response.AuthenticatedUserResponse;
 import org.expenseincometracker.expenseincometracker.service.ParentProfileService;
+import org.expenseincometracker.expenseincometracker.util.model.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -30,8 +32,12 @@ public class ParentProfileController {
             @RequestBody UpdateProfileRequest request
     ) {
 
-        parentProfileService.updateProfile(authentication, request);
-        return ResponseEntity.ok().build();
+        AuthenticatedUserResponse userResponse = parentProfileService.updateProfile(authentication, request);
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        userResponse
+                )
+        );
     }
 
 }
