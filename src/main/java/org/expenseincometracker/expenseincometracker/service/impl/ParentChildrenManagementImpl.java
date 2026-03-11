@@ -76,7 +76,7 @@ public class ParentChildrenManagementImpl implements ParentChildrenManagementSer
 
     @Override
     @Transactional
-    public void updateChildStatus(Long childId, Authentication authentication) {
+    public ChildResponse updateChildStatus(Long childId, Authentication authentication) {
         User parent =userHelper.getAuthenticatedUser(authentication);
 
         User child = userRepository.findById(childId)
@@ -90,6 +90,17 @@ public class ParentChildrenManagementImpl implements ParentChildrenManagementSer
                 child.getStatus()==UserStatus.ACTIVE?
                         UserStatus.SUSPENDED:
                         UserStatus.ACTIVE);
-        userRepository.save(child);
+        child = userRepository.save(child);
+
+        BigDecimal spent = transactionRepository.sumChildExpensesThisMonth(child.getId());
+
+        return new ChildResponse(
+                child.getId(),
+                child.getName(),
+                child.getEmail(),
+                child.getStatus(),
+                child.getSpendingLimit(),
+                spent
+        );
     }
 }

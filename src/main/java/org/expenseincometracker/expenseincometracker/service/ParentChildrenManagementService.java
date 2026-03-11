@@ -9,5 +9,5 @@ import java.util.List;
 public interface ParentChildrenManagementService {
     void createChild(CreateChildRequest request, Authentication authentication);
     List<ChildResponse> getChildren(Authentication authentication);
-    void updateChildStatus(Long childId, Authentication authentication);
+    ChildResponse updateChildStatus(Long childId, Authentication authentication);
 }

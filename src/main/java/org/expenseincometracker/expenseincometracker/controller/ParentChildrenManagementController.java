@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.expenseincometracker.expenseincometracker.dto.request.CreateChildRequest;
+import org.expenseincometracker.expenseincometracker.dto.response.ChildResponse;
 import org.expenseincometracker.expenseincometracker.service.ParentChildrenManagementService;
 import org.expenseincometracker.expenseincometracker.util.model.ApiResponse;
 import org.springframework.http.ResponseEntity;
@@ -46,8 +47,12 @@ public class ParentChildrenManagementController {
             @PathVariable Long childId,
             Authentication authentication
     ) {
-        parentService.updateChildStatus(childId, authentication);
-        return ResponseEntity.ok("Child status updated successfully");
+        ChildResponse child = parentService.updateChildStatus(childId, authentication);
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        child
+                )
+        );
     }
 
 }
