@@ -30,7 +30,11 @@ public class AdminDashboardServiceImpl implements AdminDashboardService {
 
     @Override
     public AdminDashboardResponse getDashboardStatistics() {
-        long totalUsers = userRepository.count();
+        List<Role>roles=List.of(
+                Role.ROLE_PARENT,
+                Role.ROLE_CHILD
+        );
+        long totalUsers = userRepository.countParentAndChildrenUsers(roles);
 
         long activeChildren =
                 userRepository.countByRoleAndStatus(Role.ROLE_CHILD, UserStatus.ACTIVE);

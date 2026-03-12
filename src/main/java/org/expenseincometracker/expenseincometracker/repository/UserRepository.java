@@ -101,4 +101,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
             @Param("startDate") LocalDateTime startDate
     );
 
+    @Query(
+        value = """
+            SELECT COUNT(u) 
+            FROM User u 
+            WHERE u.role IN (:roles)
+         """,nativeQuery = true
+    )
+    long countParentAndChildrenUsers(
+            @Param("roles") List<Role> roles
+    );
+
 }
