@@ -19,7 +19,8 @@ public class CorsConfig {
         config.setAllowCredentials(true);
 
         config.setAllowedOrigins(List.of(
-                "http://localhost:4200"
+                "http://localhost:4200",
+                "https://mahmoudmatar01.github.io/Expense-And-Income-Tracker-Front"
         ));
 
         config.setAllowedHeaders(List.of("*"));
