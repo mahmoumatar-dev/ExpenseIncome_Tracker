@@ -20,7 +20,8 @@ public class CorsConfig {
 
         config.setAllowedOrigins(List.of(
                 "http://localhost:4200",
-                "https://mahmoudmatar01.github.io"
+                "https://mahmoudmatar01.github.io",
+                "https://expense-and-income-tracker-front.vercel.app"
         ));
 
         config.setAllowedHeaders(List.of("*"));
