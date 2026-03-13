@@ -23,7 +23,7 @@ public class AdminTransactionController {
     @GetMapping
     public ResponseEntity<?> getAllTransactions(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "8") int size
     ) {
 
         return ResponseEntity.ok(

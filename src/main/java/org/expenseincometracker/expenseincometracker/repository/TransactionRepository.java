@@ -142,6 +142,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     @Query("""
        SELECT new org.expenseincometracker.expenseincometracker.dto.response.ParentTransactionResponse(
+           t.createdBy.email,
            t.createdAt,
            c.name,
            w.name,
@@ -162,6 +163,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     @Query("""
        SELECT new org.expenseincometracker.expenseincometracker.dto.response.ParentTransactionResponse(
+           t.createdBy.email,
            t.createdAt,
            t.category.name,
            t.wallet.name,
@@ -189,6 +191,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     @Query("""
         SELECT new org.expenseincometracker.expenseincometracker.dto.response.AdminTransactionResponse(
+            t.createdBy.email,
             t.id,
             u.name,
             t.type,

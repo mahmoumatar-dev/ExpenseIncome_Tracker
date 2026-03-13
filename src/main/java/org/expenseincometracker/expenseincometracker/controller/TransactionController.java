@@ -50,11 +50,12 @@ public class TransactionController {
     @GetMapping("/parent")
     public ResponseEntity<?> getParentTransactions(
             Authentication authentication,
-            @RequestParam(defaultValue = "0") int page
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size
     ) {
         Pageable pageable = PageRequest.of(
                 page,
-                6,
+                size,
                 Sort.by(Sort.Direction.DESC, "createdAt")
         );
         Page<ParentTransactionResponse> transactions =
@@ -68,11 +69,12 @@ public class TransactionController {
     @GetMapping("/child")
     public ResponseEntity<?> getChildTransactions(
             Authentication authentication,
-            @RequestParam(defaultValue = "0") int page
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size
     ) {
         Pageable pageable = PageRequest.of(
                 page,
-                6,
+                size,
                 Sort.by(Sort.Direction.DESC, "createdAt")
         );
         Page<ParentTransactionResponse> transactions =

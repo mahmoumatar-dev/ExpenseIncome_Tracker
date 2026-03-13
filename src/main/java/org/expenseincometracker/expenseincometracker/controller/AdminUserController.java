@@ -20,7 +20,7 @@ public class AdminUserController {
     @GetMapping
     public ResponseEntity<?> getAllUsers(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "8") int size
     ) {
         return ResponseEntity.ok(
                 ApiResponse.success(
@@ -32,7 +32,7 @@ public class AdminUserController {
     @GetMapping("/suspended")
     public ResponseEntity<?> getAllSuspendedUsers(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "8") int size
     ) {
         return ResponseEntity.ok(
                 ApiResponse.success(

@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record AdminTransactionResponse(
+        String owner,
         Long transactionId,
         String userName,
         TransactionType transactionType,
